@@ -1,0 +1,6 @@
+name = "stock-tracker"
+main = "src/index.ts"
+compatibility_date = "2025-11-21"
+
+[vars]
+POLYGON_API_KEY = "your_key_here"  # or use wrangler secret
