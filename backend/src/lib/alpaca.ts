@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import crypto from 'crypto';
 
 dotenv.config();
 
@@ -7,8 +6,23 @@ const API_KEY = process.env.ALPACA_API_KEY;
 const SECRET_KEY = process.env.ALPACA_SECRET_KEY;
 const BASE_URL = process.env.ALPACA_BASE_URL || 'https://paper-api.alpaca.markets';
 
+// DEBUG: Log what we're getting
+console.log('=== ALPACA DEBUG ===');
+console.log('API_KEY exists:', !!API_KEY);
+console.log('API_KEY length:', API_KEY?.length || 0);
+console.log('API_KEY first 5 chars:', API_KEY?.substring(0, 5) || 'NONE');
+console.log('SECRET_KEY exists:', !!SECRET_KEY);
+console.log('SECRET_KEY length:', SECRET_KEY?.length || 0);
+console.log('BASE_URL:', BASE_URL);
+console.log('===================');
+
 if (!API_KEY || !SECRET_KEY) {
-  throw new Error('ALPACA_API_KEY and ALPACA_SECRET_KEY are required in .env');
+  throw new Error(
+    `Alpaca keys missing!\n` +
+    `API_KEY: ${API_KEY ? '✓' : '✗'}\n` +
+    `SECRET_KEY: ${SECRET_KEY ? '✓' : '✗'}\n` +
+    `Check your .env file!`
+  );
 }
 
 // Helper to make authenticated requests to Alpaca
@@ -32,6 +46,8 @@ export async function fetchAlpaca(
     options.body = JSON.stringify(body);
   }
 
+  console.log(`[Alpaca Request] ${method} ${endpoint}`);
+  
   const response = await fetch(url, options);
 
   if (!response.ok) {
@@ -51,8 +67,8 @@ export async function getAccountPortfolioHistory(period?: string, timeframe?: st
   let endpoint = '/v2/account/portfolio/history';
   if (period || timeframe) {
     const params = new URLSearchParams();
-    if (period) params.append('period', period); // e.g., '1M', '3M', '1A'
-    if (timeframe) params.append('timeframe', timeframe); // e.g., '1D', '1W'
+    if (period) params.append('period', period);
+    if (timeframe) params.append('timeframe', timeframe);
     endpoint += `?${params.toString()}`;
   }
   return fetchAlpaca(endpoint);
@@ -100,7 +116,7 @@ export async function placeOrder(params: {
 export async function getOrders(status?: string, limit?: number, after?: string) {
   let endpoint = '/v2/orders';
   const params = new URLSearchParams();
-  if (status) params.append('status', status); // 'open', 'closed', 'all'
+  if (status) params.append('status', status);
   if (limit) params.append('limit', limit.toString());
   if (after) params.append('after', after);
   if (params.toString()) {
