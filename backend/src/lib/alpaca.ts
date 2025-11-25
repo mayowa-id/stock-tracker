@@ -34,6 +34,7 @@ export async function fetchAlpaca(
   const url = `${BASE_URL}${endpoint}`;
   const headers: Record<string, string> = {
     'APCA-API-KEY-ID': API_KEY,
+    'APCA-API-SECRET-KEY': SECRET_KEY,  // THIS WAS MISSING!
   };
 
   const options: RequestInit = {

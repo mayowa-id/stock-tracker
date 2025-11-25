@@ -13,6 +13,7 @@ import orders from './api/orders';
 import watchlists from './api/watchlists';
 import fundamentals from './api/fundamentals';
 import market from './api/market';
+import demo from './api/demo';
 import { createWebSocketRouter } from './api/websocket';
 
 const app = new Hono();
@@ -33,12 +34,21 @@ app.route('/orders', orders);
 app.route('/watchlists', watchlists);
 app.route('/fundamentals', fundamentals);
 app.route('/market', market);
+app.route('/demo', demo);
 
 const wsRouter = createWebSocketRouter(upgradeWebSocket);
 app.route('/ws', wsRouter);
 
 // Health check
-app.get('/', (c) => c.text('Stock Tracker API is running!'));
+app.get('/', (c) => c.json({
+  message: 'Stock Tracker API is running!',
+  mode: 'Demo Mode - No API Keys Required! 🎉',
+  features: {
+    trading: 'Mock trading with $100k starting balance',
+    marketData: 'Yahoo Finance (real-time, no key needed)',
+    apiDocs: '/api-docs',
+  }
+}));
 
 // API Documentation
 app.get('/api-docs', (c) => {
@@ -116,8 +126,8 @@ if (process.env.NODE_ENV !== 'production') {
     port: PORT,
   });
   injectWebSocket(server);
-  console.log(`Server running at http://localhost:${PORT}`);
-  console.log(`API Documentation: http://localhost:${PORT}/api-docs`);
+  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
 }
 
 export default app;
