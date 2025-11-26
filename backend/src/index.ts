@@ -4,6 +4,7 @@ import { createNodeWebSocket } from '@hono/node-ws';
 import { corsMiddleware } from './middleware/cors';
 
 // Import route handlers
+import auth from './api/auth';
 import quotes from './api/quotes';
 import historical from './api/historical';
 import analytics from './api/analytics';
@@ -25,6 +26,7 @@ const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 app.use('*', corsMiddleware);
 
 // Mount routes
+app.route('/auth', auth);
 app.route('/quotes', quotes);
 app.route('/historical', historical);
 app.route('/analytics', analytics);
@@ -126,8 +128,8 @@ if (process.env.NODE_ENV !== 'production') {
     port: PORT,
   });
   injectWebSocket(server);
-  console.log(`✅ Server running at http://localhost:${PORT}`);
-  console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`API Documentation available at: http://localhost:${PORT}/api-docs`);
 }
 
 export default app;
