@@ -82,10 +82,15 @@ app.post('/register', async (c: Context) => {
     }, 201);
   } catch (err: any) {
     console.error('Registration error:', err);
+    console.error('Full error stack:', err.stack);
+    console.error('Error message:', err.message);
     if (err instanceof z.ZodError) {
       return c.json({ error: 'Invalid input', details: err.errors }, 400);
     }
-    return c.json({ error: 'Registration failed' }, 500);
+    return c.json({ 
+      error: 'Registration failed',
+      debug: process.env.NODE_ENV === 'development' ? err.message : undefined 
+    }, 500);
   }
 });
 
