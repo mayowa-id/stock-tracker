@@ -44,7 +44,7 @@ app.route('/ws', wsRouter);
 // Health check
 app.get('/', (c) => c.json({
   message: 'Stock Tracker API is running!',
-  mode: 'Demo Mode - No API Keys Required! 🎉',
+  mode: 'Demo Mode - No API Keys Required! ',
   features: {
     trading: 'Mock trading with $100k starting balance',
     marketData: 'Yahoo Finance (real-time, no key needed)',
