@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { fetchPolygon } from '../lib/polygon';
 import type { StockQuote } from '../lib/types';
+
 const app = new Hono();
 
 // GET /quotes/:symbol - Fetch latest quote
@@ -18,13 +19,13 @@ app.get('/:symbol', async (c: Context) => {
       return c.json({ error: 'No quote found for symbol' }, 404);
     }
 
-    // Map to our type (Polygon's last quote structure)
+    // Map to our type (correct Polygon fields: P=ask, p=bid, etc.)
     const quote: StockQuote = {
-      askprice: data.last.askprice,
-      asksize: data.last.asksize,
-      bidprice: data.last.bidprice,
-      bidsize: data.last.bidsize,
-      timestamp: data.last.timestamp,
+      askprice: data.last.P || 0,
+      asksize: data.last.S || 0,
+      bidprice: data.last.p || 0,
+      bidsize: data.last.s || 0,
+      timestamp: data.last.t || Date.now(),
     };
 
     return c.json(quote);
