@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { TrendingUp, TrendingDown, Activity, AlertTriangle } from 'lucide-react'
+import { TrendingUp, TrendingDown, Activity, AlertTriangle, Sun, Moon, Monitor } from 'lucide-react'
 import {
   LineChart,
   Line,
@@ -14,9 +14,9 @@ import { format } from 'date-fns'
 const ALL_SYMBOLS = [
   'AAPL', 'TSLA', 'NVDA', 'MSFT', 'GOOGL', 'AMZN', 'META', 'AMD', 'INTC', 'IBM',
   'ORCL', 'CSCO', 'SPY', 'QQQ', 'DIA', 'NFLX', 'DIS', 'BA', 'CAT', 'JPM', 'V', 'WMT'
-] // 20+ symbols; add more as needed
+]
 
-const BACKEND_URL = 'http://localhost:3000' // Change to deployed URL after deploy, e.g., 'https://stock-tracker-api.yourusername.workers.dev'
+const BACKEND_URL = 'http://localhost:3000' // Or your deployed URL
 
 interface Quote {
   bid: number
@@ -34,25 +34,42 @@ interface ChartPoint {
 
 function App() {
   const [selected, setSelected] = useState(ALL_SYMBOLS[0])
-  const [favorites, setFavorites] = useState<string[]>(ALL_SYMBOLS.slice(0, 4)) // Default first 4
+  const [favorites, setFavorites] = useState<string[]>(ALL_SYMBOLS.slice(0, 4))
   const [quote, setQuote] = useState<Quote | null>(null)
   const [history, setHistory] = useState<ChartPoint[]>([])
   const [sma50, setSma50] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isDark, setIsDark] = useState(true) // Default dark
+  const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>('auto') // New: theme state
   const ws = useRef<WebSocket | null>(null)
 
-  // System theme detection
+  // Theme management (system + manual)
   useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    setIsDark(media.matches)
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'auto' | null
+    if (savedTheme) setTheme(savedTheme)
 
-    const listener = (e: MediaQueryListEvent) => setIsDark(e.matches)
-    media.addEventListener('change', listener)
-    return () => media.removeEventListener('change', listener)
-  }, [])
+    const applyTheme = (isDark: boolean) => {
+      document.documentElement.classList.toggle('dark', isDark)
+    }
 
-  // Load/save favorites from localStorage
+    if (theme === 'auto') {
+      const media = window.matchMedia('(prefers-color-scheme: dark)')
+      applyTheme(media.matches)
+
+      const listener = (e: MediaQueryListEvent) => applyTheme(e.matches)
+      media.addEventListener('change', listener)
+      return () => media.removeEventListener('change', listener)
+    } else {
+      applyTheme(theme === 'dark')
+    }
+  }, [theme])
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'auto' ? 'light' : theme === 'light' ? 'dark' : 'auto'
+    setTheme(nextTheme)
+    localStorage.setItem('theme', nextTheme)
+  }
+
+  // Load/save favorites
   useEffect(() => {
     const saved = localStorage.getItem('stockFavorites')
     if (saved) setFavorites(JSON.parse(saved))
@@ -62,7 +79,7 @@ function App() {
     localStorage.setItem('stockFavorites', JSON.stringify(favorites))
   }, [favorites])
 
-  // Fetch initial data
+  // Fetch initial data (unchanged, but here for completeness)
   useEffect(() => {
     setError(null)
     const fetchData = async () => {
@@ -104,7 +121,7 @@ function App() {
     fetchData()
   }, [selected])
 
-  // WebSocket real-time updates
+  // WebSocket (unchanged)
   useEffect(() => {
     if (ws.current) ws.current.close()
 
@@ -138,41 +155,53 @@ function App() {
     return () => ws.current?.close()
   }, [selected, quote?.price])
 
-  // Handle favorite multi-select (up to 4)
+  // Handle favorites
   const handleFavoritesChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(e.target.selectedOptions, option => option.value)
-    setFavorites(selectedOptions.slice(0, 4)) // Limit to 4
+    setFavorites(selectedOptions.slice(0, 4))
   }
 
   return (
     <div className={`min-h-screen bg-white dark:bg-slate-950 text-black dark:text-white transition-colors`}>
       <div className="border-b border-gray-200 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
           <h1 className="text-4xl font-bold flex items-center gap-3">
             <Activity className="w-10 h-10 text-emerald-500" />
             Real-Time Stock Tracker
           </h1>
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="p-3 rounded-full bg-gray-200 dark:bg-slate-800 hover:bg-gray-300 dark:hover:bg-slate-700 transition-colors"
+            aria-label="Toggle theme"
+          >
+            {theme === 'auto' ? <Monitor className="w-5 h-5 text-gray-700 dark:text-gray-300" /> :
+             theme === 'light' ? <Sun className="w-5 h-5 text-yellow-500" /> :
+             <Moon className="w-5 h-5 text-indigo-400" />}
+          </button>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Favorites Multi-Select Dropdown (up to 4) */}
+        {/* Favorites Multi-Select Dropdown (Styled) */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Select up to 4 favorites:</label>
           <select
             multiple
             value={favorites}
             onChange={handleFavoritesChange}
-            className="w-full p-3 bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-black dark:text-white"
-            size={5} // Show 5 options visible
+            className="w-full p-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-black dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all cursor-pointer"
+            size={5}
           >
             {ALL_SYMBOLS.map(s => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s} className="py-2 px-3 hover:bg-emerald-100 dark:hover:bg-emerald-900/30">
+                {s}
+              </option>
             ))}
           </select>
         </div>
 
-        {/* Quick-Switch Buttons for Favorites */}
+        {/* Quick-Switch Buttons */}
         <div className="flex gap-3 flex-wrap mb-8">
           {favorites.map(s => (
             <button
