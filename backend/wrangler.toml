@@ -1,7 +1,3 @@
 name = "stock-tracker-api"
 main = "src/index.ts"
 compatibility_date = "2025-12-11"
-
-[
-vars
-]
