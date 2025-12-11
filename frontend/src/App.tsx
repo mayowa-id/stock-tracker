@@ -158,7 +158,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
           <h1 className="text-4xl font-bold flex items-center gap-3">
             <Activity className="w-10 h-10 text-emerald-500" />
-            Real-Time Stock Tracker
+            Live Stock Tracker
           </h1>
           {/* Theme Toggle Button (Light/Dark only) */}
           <button
