@@ -2,21 +2,21 @@ import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 // Note: avoid static import of createNodeWebSocket which can differ between versions
 // We'll try to `require` it dynamically below.
-import { corsMiddleware } from './middleware/cors.js';
+import { corsMiddleware } from '../src/middleware/cors.js';
 
 // Import route handlers (note the .js extensions for Node ESM runtime)
-import auth from './api/auth.js';
-import quotes from './api/quotes.js';
-import historical from './api/historical.js';
-import analytics from './api/analytics.js';
-import account from './api/account.js';
-import positions from './api/positions.js';
-import orders from './api/orders.js';
-import watchlists from './api/watchlists.js';
-import fundamentals from './api/fundamentals.js';
-import market from './api/market.js';
-import demo from './api/demo.js';
-import { createWebSocketRouter } from './api/websocket.js';
+import auth from '../src/api/auth.js';
+import quotes from '../src/api/quotes.js';
+import historical from '../src/api/historical.js';
+import analytics from '../src/api/analytics.js';
+import account from '../src/api/account.js';
+import positions from '../src/api/positions.js';
+import orders from '../src/api/orders.js';
+import watchlists from '../src/api/watchlists.js';
+import fundamentals from '../src/api/fundamentals.js';
+import market from '../src/api/market.js';
+import demo from '../src/api/demo.js';
+import { createWebSocketRouter } from '../src/api/websocket.js';
 
 const app = new Hono();
 
