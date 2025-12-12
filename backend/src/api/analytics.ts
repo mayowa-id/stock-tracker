@@ -1,8 +1,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
-import { fetchPolygon } from '../lib/polygon';
-import type { AggregatesResponse } from '../lib/types';
+import { getHistoricalData } from '../lib/yahoo-finance';
 
 const app = new Hono();
 
@@ -28,20 +27,19 @@ app.get('/:symbol', async (c: Context) => {
   const period = params.period;
 
   // Fetch enough historical data (double the period for buffer)
-  const from = new Date(Date.now() - period * 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-  const to = new Date().toISOString().split('T')[0];
+  const fromUnix = Math.floor((Date.now() - period * 2 * 24 * 60 * 60 * 1000) / 1000);
+  const toUnix = Math.floor(Date.now() / 1000);
 
   try {
-    // Endpoint: /v2/aggs/ticker/:symbol/range/1/day/:from/:to
-    const endpoint = `/v2/aggs/ticker/${symbol}/range/1/day/${from}/${to}`;
-    const data: AggregatesResponse = await fetchPolygon(endpoint, { adjusted: 'true' });
+    const data = await getHistoricalData(symbol, fromUnix, toUnix, '1d');
+    console.log('Raw Yahoo analytics historical:', data); // Debug
 
-    if (!data.results || data.results.length < period) {
+    if (data.length < period) {
       return c.json({ error: 'Insufficient data for analytics' }, 404);
     }
 
     // Compute SMA from last 'period' closing prices
-    const closes = data.results.slice(-period).map((bar) => bar.c);
+    const closes = data.slice(-period).map((bar: any) => bar.close);
     const sma = closes.reduce((sum, price) => sum + price, 0) / period;
 
     return c.json({

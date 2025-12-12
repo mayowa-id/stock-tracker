@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import type { Context, Next } from 'hono';
-import { getPolygonWS, subscribeSymbol, unsubscribeSymbol, symbolClients } from '../lib/polygon';
+import { getFinnhubWS, subscribeSymbol, unsubscribeSymbol, symbolClients } from '../lib/finhub';
 import type { WebSocket } from 'ws';
 import { Buffer } from 'node:buffer'; // For onMessage/onClose types
 
@@ -14,7 +14,7 @@ export function createWebSocketRouter(upgradeWebSocket: (handler: (c: Context) =
     }
     return {
       onOpen: (ws: WebSocket) => {
-        getPolygonWS();
+        getFinnhubWS();
         let clients = symbolClients.get(symbol);
         if (!clients) {
           clients = new Set();
