@@ -75,21 +75,31 @@ app.post('/register', async (c: Context) => {
       email: user.email,
     });
 
-    return c.json({
-      message: 'User registered successfully',
-      user,
-      token,
-    }, 201);
-  } catch (err: any) {
-    console.error('Registration error:', err);
-    console.error('Full error stack:', err.stack);
-    console.error('Error message:', err.message);
+    return c.json(
+      {
+        message: 'User registered successfully',
+        user,
+        token,
+      },
+      201
+    );
+  } catch (err: unknown) {
+    // Safe logging & zod handling
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('Registration error:', message);
+
     if (err instanceof z.ZodError) {
-      return c.json({ error: 'Invalid input', details: err.errors }, 400);
+      // Zod exposes `issues` (not `errors`)
+      const details = err.issues.map((i) => ({
+        path: i.path.join('.'),
+        message: i.message,
+      }));
+      return c.json({ error: 'Invalid input', details }, 400);
     }
-    return c.json({ 
+
+    return c.json({
       error: 'Registration failed',
-      debug: process.env.NODE_ENV === 'development' ? err.message : undefined 
+      debug: process.env.NODE_ENV === 'development' ? message : undefined,
     }, 500);
   }
 });
@@ -139,10 +149,16 @@ app.post('/login', async (c: Context) => {
       },
       token,
     });
-  } catch (err: any) {
-    console.error('Login error:', err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('Login error:', message);
+
     if (err instanceof z.ZodError) {
-      return c.json({ error: 'Invalid input', details: err.errors }, 400);
+      const details = err.issues.map((i) => ({
+        path: i.path.join('.'),
+        message: i.message,
+      }));
+      return c.json({ error: 'Invalid input', details }, 400);
     }
     return c.json({ error: 'Login failed' }, 500);
   }
@@ -169,8 +185,9 @@ app.get('/me', authMiddleware, async (c: Context) => {
     }
 
     return c.json({ user });
-  } catch (err) {
-    console.error('Get user error:', err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('Get user error:', message);
     return c.json({ error: 'Failed to get user' }, 500);
   }
 });

@@ -20,7 +20,7 @@ app.get('/:symbol', async (c: Context) => {
   let params;
   try {
     params = analyticsSchema.parse(c.req.query());
-  } catch (err) {
+  } catch (err: unknown) {
     return c.json({ error: 'Invalid query parameters' }, 400);
   }
 
@@ -39,8 +39,8 @@ app.get('/:symbol', async (c: Context) => {
     }
 
     // Compute SMA from last 'period' closing prices
-    const closes = data.slice(-period).map((bar: any) => bar.close);
-    const sma = closes.reduce((sum, price) => sum + price, 0) / period;
+    const closes: number[] = data.slice(-period).map((bar: any) => Number(bar.close) || 0);
+    const sma = closes.reduce((sum: number, price: number) => sum + price, 0) / period;
 
     return c.json({
       symbol,
@@ -48,8 +48,9 @@ app.get('/:symbol', async (c: Context) => {
       sma: Number(sma.toFixed(2)),
       lastClose: closes[closes.length - 1],
     });
-  } catch (err) {
-    console.error(`Error computing analytics for ${symbol}:`, err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`Error computing analytics for ${symbol}:`, message);
     return c.json({ error: 'Failed to compute analytics' }, 500);
   }
 });
