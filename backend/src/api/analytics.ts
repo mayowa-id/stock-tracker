@@ -45,7 +45,7 @@ app.get('/:symbol', async (c: Context) => {
     return c.json({
       symbol,
       period,
-      sma: Number(sma.toFixed(2)), // Round to 2 decimals
+      sma: Number(sma.toFixed(2)),
       lastClose: closes[closes.length - 1],
     });
   } catch (err) {

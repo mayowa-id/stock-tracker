@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { fetchFinnhub } from '../lib/finhub';
+import { getQuote } from '../lib/yahoo-finance';
 import type { StockQuote } from '../lib/types';
 
 const app = new Hono();
@@ -13,27 +13,22 @@ app.get('/:symbol', async (c: Context) => {
   }
 
   try {
-    // Endpoint: /quote?symbol=:symbol
-    const data = await fetchFinnhub('/quote', { symbol });
-    console.log('Raw Finnhub quote response:', data); // Debug log - check terminal when hitting endpoint
+    const data = await getQuote(symbol);
+    console.log('Raw Yahoo quote response:', data); // Debug
 
-    if (!data.c) {
-      return c.json({ error: 'No quote found for symbol (check API key or tier)' }, 404);
-    }
-
-    // Map with fallbacks (Finnhub: c=current, h=high, l=low, o=open, pc=previous close; no size/bid/ask in free)
+    // Map to StockQuote
     const quote: StockQuote = {
-      askprice: data.c || data.h || 0,
-      asksize: 0,
-      bidprice: data.c || data.l || 0,
+      askprice: data.price || 0, // Fallback
+      asksize: 0, // Not in basic quote
+      bidprice: data.price || 0,
       bidsize: 0,
-      timestamp: data.t * 1000 || Date.now(),
+      timestamp: Date.now(),
     };
 
     return c.json(quote);
   } catch (err) {
     console.error(`Error fetching quote for ${symbol}:`, err);
-    return c.json({ error: 'Failed to fetch quote - check Finnhub rate limits or key' }, 500);
+    return c.json({ error: 'Failed to fetch quote' }, 500);
   }
 });
 

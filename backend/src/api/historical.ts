@@ -34,7 +34,7 @@ app.get('/:symbol', async (c: Context) => {
   const fromUnix = Math.floor(new Date(from).getTime() / 1000);
   const toUnix = Math.floor(new Date(to).getTime() / 1000);
 
-  const interval = params.timespan === 'day' ? '1d' : params.timespan === 'week' ? '1wk' : '1mo'; // Map to Yahoo intervals
+  const interval = params.timespan === 'day' ? '1d' : params.timespan === 'week' ? '1wk' : '1mo'; // Map to Yahoo
 
   try {
     const data = await getHistoricalData(symbol, fromUnix, toUnix, interval);
@@ -44,14 +44,14 @@ app.get('/:symbol', async (c: Context) => {
       return c.json({ error: 'No historical data found' }, 404);
     }
 
-    // Map to AggregatesResponse format
+    // Map to AggregatesResponse format (frontend expects results with t, c)
     const results = data.map((bar: any) => ({
       o: bar.open,
       h: bar.high,
       l: bar.low,
       c: bar.close,
       v: bar.volume,
-      vw: (bar.open + bar.high + bar.low + bar.close) / 4, // Approximate vw
+      vw: (bar.open + bar.high + bar.low + bar.close) / 4, // Approximate
       t: bar.timestamp,
       n: 0, // Not available
     }));
