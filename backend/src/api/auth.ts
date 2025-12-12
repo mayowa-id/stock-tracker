@@ -39,7 +39,7 @@ app.post('/register', async (c: Context) => {
     const hashedPassword = await hashPassword(validated.password);
 
     // Create user and account in a transaction
-    const user = await prisma.$transaction(async (tx) => {
+    const user = await prisma.$transaction(async (tx: typeof prisma) => {
       const newUser = await tx.user.create({
         data: {
           email: validated.email,
