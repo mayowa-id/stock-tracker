@@ -15,23 +15,25 @@ app.get('/:symbol', async (c: Context) => {
   try {
     // Endpoint: /v2/last/nbbo/:symbol
     const data = await fetchPolygon(`/v2/last/nbbo/${symbol}`);
+    console.log('Raw Polygon quote response:', data); // Debug log - check terminal when hitting endpoint
+
     if (!data?.last) {
-      return c.json({ error: 'No quote found for symbol' }, 404);
+      return c.json({ error: 'No quote found for symbol (check API key or tier)' }, 404);
     }
 
-    // Map to our type (correct Polygon fields: P=ask, p=bid, etc.)
+    // Map with fallbacks (Polygon: P=ask price, S=ask size, p=bid price, s=bid size)
     const quote: StockQuote = {
-      askprice: data.last.P || 0,
-      asksize: data.last.S || 0,
-      bidprice: data.last.p || 0,
-      bidsize: data.last.s || 0,
+      askprice: data.last.P || data.last.p || 0, // Fallback to bid if ask missing
+      asksize: data.last.S || data.last.s || 0,
+      bidprice: data.last.p || data.last.P || 0, // Fallback to ask if bid missing
+      bidsize: data.last.s || data.last.S || 0,
       timestamp: data.last.t || Date.now(),
     };
 
     return c.json(quote);
   } catch (err) {
     console.error(`Error fetching quote for ${symbol}:`, err);
-    return c.json({ error: 'Failed to fetch quote' }, 500);
+    return c.json({ error: 'Failed to fetch quote - check Polygon rate limits or key' }, 500);
   }
 });
 

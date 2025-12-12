@@ -4,6 +4,7 @@ import { WSQuoteMessage } from './types';
 dotenv.config();
 
 const API_KEY = process.env.POLYGON_API_KEY;
+
 if (!API_KEY) {
   throw new Error('POLYGON_API_KEY is required in .env');
 }

@@ -74,11 +74,25 @@ function App() {
     setError(null)
     const fetchData = async () => {
       try {
-        const [qRes, hRes, aRes] = await Promise.all([
-          fetch(`${BACKEND_URL}/quotes/${selected}`).then(r => { if (!r.ok) throw new Error('Quote failed'); return r.json() }),
-          fetch(`${BACKEND_URL}/historical/${selected}`).then(r => { if (!r.ok) throw new Error('Historical failed'); return r.json() }),
-          fetch(`${BACKEND_URL}/analytics/${selected}`).then(r => { if (!r.ok) throw new Error('Analytics failed'); return r.json() }),
-        ])
+    const [qRes, hRes, aRes] = await Promise.all([
+    fetch(`${BACKEND_URL}/quotes/${selected}`).then(r => { 
+      if (!r.ok) throw new Error(`Quote failed: ${r.status}`); 
+      return r.json(); 
+    }),
+    fetch(`${BACKEND_URL}/historical/${selected}`).then(r => { 
+      if (!r.ok) throw new Error(`Historical failed: ${r.status}`); 
+      return r.json(); 
+    }),
+    fetch(`${BACKEND_URL}/analytics/${selected}`).then(r => { 
+      if (!r.ok) throw new Error(`Analytics failed: ${r.status}`); 
+      return r.json(); 
+    }),
+  ])
+
+  console.log('Quotes response:', qRes); // Debug - check browser console
+  console.log('Historical response:', hRes);
+  console.log('Analytics response:', aRes);
+
 
         const ask = qRes.askprice || 0
         const bid = qRes.bidprice || 0
@@ -103,7 +117,7 @@ function App() {
         setHistory(chartData)
         setSma50(aRes.sma || null)
       } catch (err) {
-        setError('Failed to load data. Check backend or API key.')
+        setError(`Failed to load data: ${err.message}`)
         console.error(err)
       }
     }
