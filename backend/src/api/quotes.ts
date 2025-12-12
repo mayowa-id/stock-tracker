@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { getQuote } from '../lib/yahoo-finance.js';
-import type { StockQuote } from '../lib/types';
+import type { StockQuote } from '../lib/types.js';
 
 const app = new Hono();
 

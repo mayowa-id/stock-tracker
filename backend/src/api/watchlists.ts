@@ -8,7 +8,7 @@ import {
   addToWatchlist,
   removeFromWatchlist,
   deleteWatchlist,
-} from '../lib/alpaca';
+} from '../lib/alpaca.js';
 
 const app = new Hono();
 
