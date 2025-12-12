@@ -1,19 +1,21 @@
 import { PrismaClient } from '@prisma/client';
 
-// Singleton pattern for Prisma Client
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+declare global {
+  var prisma: PrismaClient | undefined;
+}
 
 export const prisma =
-    globalForPrisma.prisma ||
-    new PrismaClient({
-        log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    });
+  global.prisma ??
+  new PrismaClient({
+    log: ['query', 'info', 'warn', 'error'],
+  });
 
-if (process.env.NODE_ENV !== 'production') {
-    globalForPrisma.prisma = prisma;
-}
+if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
+
 
 // Helper function to gracefully disconnect
 export async function disconnectDB() {
     await prisma.$disconnect();
 }
+
+

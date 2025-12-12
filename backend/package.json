@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc && prisma generate",
     "start": "node dist/index.ts",
     "deploy:cf": "wrangler deploy"
   },
