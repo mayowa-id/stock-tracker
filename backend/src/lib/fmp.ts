@@ -7,11 +7,13 @@ if (!API_KEY) {
   throw new Error('FMP_API_KEY is required in .env');
 }
 
+const FMP_API_KEY_STR: string = API_KEY as string;
+
 const BASE_URL = 'https://financialmodelingprep.com/api/v3';
 
 export async function fetchFMP(endpoint: string, params: Record<string, string> = {}) {
   const url = new URL(`${BASE_URL}${endpoint}`);
-  url.searchParams.set('apikey', API_KEY);
+  url.searchParams.set('apikey', FMP_API_KEY_STR);
 
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, value);

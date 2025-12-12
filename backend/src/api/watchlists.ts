@@ -56,13 +56,18 @@ app.post('/', async (c: Context) => {
       assetCount: watchlist.assets ? watchlist.assets.length : 0,
       createdAt: watchlist.created_at,
     });
-  } catch (err: any) {
-    console.error('Error creating watchlist:', err);
-    if (err instanceof z.ZodError) {
-      return c.json({ error: 'Invalid watchlist parameters', details: err.errors }, 400);
-    }
-    return c.json({ error: 'Failed to create watchlist' }, 500);
+ } catch (err: unknown) {
+  const message = err instanceof Error ? err.message : String(err);
+  console.error('Error:', message);
+
+  if (err instanceof z.ZodError) {
+    const details = err.issues.map(i => ({ path: i.path.join('.'), message: i.message }));
+    return c.json({ error: 'Invalid input', details }, 400);
   }
+
+  return c.json({ error: 'Request failed' }, 500);
+}
+
 });
 
 // GET /watchlists/:watchlistId - Get specific watchlist

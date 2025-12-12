@@ -25,6 +25,10 @@ if (!API_KEY || !SECRET_KEY) {
   );
 }
 
+// Narrowed non-null strings for TypeScript
+const API_KEY_STR: string = API_KEY as string;
+const SECRET_KEY_STR: string = SECRET_KEY as string;
+
 // Helper to make authenticated requests to Alpaca
 export async function fetchAlpaca(
   endpoint: string,
@@ -33,8 +37,8 @@ export async function fetchAlpaca(
 ) {
   const url = `${BASE_URL}${endpoint}`;
   const headers: Record<string, string> = {
-    'APCA-API-KEY-ID': API_KEY,
-    'APCA-API-SECRET-KEY': SECRET_KEY,  // THIS WAS MISSING!
+    'APCA-API-KEY-ID': API_KEY_STR,
+    'APCA-API-SECRET-KEY': SECRET_KEY_STR,
   };
 
   const options: RequestInit = {

@@ -46,13 +46,18 @@ app.post('/', async (c: Context) => {
             stopPrice: order.stop_price ? parseFloat(order.stop_price) : null,
             createdAt: order.created_at,
         });
-    } catch (err: any) {
-        console.error('Error placing order:', err);
-        if (err instanceof z.ZodError) {
-            return c.json({ error: 'Invalid order parameters', details: err.errors }, 400);
-        }
-        return c.json({ error: 'Failed to place order', message: err.message }, 500);
-    }
+} catch (err: unknown) {
+  const message = err instanceof Error ? err.message : String(err);
+  console.error('Error:', message);
+
+  if (err instanceof z.ZodError) {
+    const details = err.issues.map(i => ({ path: i.path.join('.'), message: i.message }));
+    return c.json({ error: 'Invalid input', details }, 400);
+  }
+
+  return c.json({ error: 'Request failed' }, 500);
+}
+
 });
 
 // GET /orders - Get orders (open, closed, or all)

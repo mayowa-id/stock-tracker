@@ -57,7 +57,7 @@ app.get('/:symbol', async (c: Context) => {
       heldPercentInstitutions: keyStats.heldPercentInstitutions?.raw,
       shortRatio: keyStats.shortRatio?.raw,
       bookValue: keyStats.bookValue?.raw,
-      priceToBook: keyStats.priceToBook?.raw,
+      // removed duplicate priceToBook here to avoid duplicate-key TS error
       earningsQuarterlyGrowth: keyStats.earningsQuarterlyGrowth?.raw,
       forwardEps: keyStats.forwardEps?.raw,
       dividendYield: keyStats.dividendYield?.raw,
