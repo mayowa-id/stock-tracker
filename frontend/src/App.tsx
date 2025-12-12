@@ -19,7 +19,7 @@ const ALL_SYMBOLS = [
 
 const DEFAULT_FAVORITES = ['AAPL', 'TSLA', 'NVDA', 'MSFT'] // Default to avoid empty state
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
+const BACKEND_URL = import.meta.env.BACKEND_URL || 'http://localhost:3000'
 
 interface Quote {
   bid: number

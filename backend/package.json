@@ -4,7 +4,9 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc && prisma generate",
     "start": "node dist/index.ts",
-    "deploy:cf": "wrangler deploy"
+    "deploy:cf": "wrangler deploy",
+        "postinstall": "prisma generate"
+
   },
   "name": "backend",
   "version": "1.0.0",

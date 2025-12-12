@@ -1,13 +1,17 @@
 {
   "version": 2,
+ "buildCommand": "npm install && prisma generate && npm run build",
   "builds": [
     {
       "src": "src/index.ts",
       "use": "@vercel/node",
-      "config": { "tsconfig": "tsconfig.json" }
+      "config": { "runtime": "nodejs18.x" }
     }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/src/index.ts" }
+    {
+      "src": "/(.*)",
+      "dest": "/src/index.ts"
+    }
   ]
 }
