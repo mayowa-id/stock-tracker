@@ -8,6 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Label,
 } from 'recharts'
 import { format } from 'date-fns'
 
@@ -18,7 +19,7 @@ const ALL_SYMBOLS = [
 
 const DEFAULT_FAVORITES = ['AAPL', 'TSLA', 'NVDA', 'MSFT'] // Default to avoid empty state
 
-const BACKEND_URL = 'http://localhost:3000' // Or your deployed URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
 interface Quote {
   bid: number
@@ -117,7 +118,7 @@ function App() {
         setHistory(chartData)
         setSma50(aRes.sma || null)
       } catch (err) {
-        setError(`Failed to load data: ${err.message}`)
+        setError(`Failed to load data: ${(err as Error).message}`)
         console.error(err)
       }
     }
@@ -269,21 +270,25 @@ function App() {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={history}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db dark:#334155" />
-                  <XAxis dataKey="time" stroke="#6b7280 dark:#94a3b8" />
-                  <YAxis stroke="#6b7280 dark:#94a3b8" />
+                  <XAxis dataKey="time" stroke="#6b7280 dark:#94a3b8">
+                    <Label value="Date" offset={-5} position="insideBottom" fill="#6b7280 dark:#94a3b8" />
+                  </XAxis>
+                  <YAxis stroke="#6b7280 dark:#94a3b8">
+                    <Label value="Price ($)" angle={-90} offset={10} position="insideLeft" fill="#6b7280 dark:#94a3b8" />
+                  </YAxis>
                   <Tooltip
                     contentStyle={{ background: '#f9fafb dark:#1e293b', border: '1px solid #d1d5db dark:#334155', color: '#000 dark:#e2e8f0' }}
                   />
-                  <Line type="monotone" dataKey="price" stroke="#10b981" strokeWidth={3} dot={false} />
+                  <Line type="monotone" dataKey="price" stroke="#10b981" strokeWidth={3} dot={false} name="Price" />
                   {sma50 && (
                     <Line
                       type="monotone"
-                      data={() => history.map(p => ({ ...p, sma: sma50 }))}
                       dataKey="sma"
                       stroke="#f59e0b"
                       strokeWidth={2}
                       strokeDasharray="6 6"
                       dot={false}
+                      name="50-Day SMA"
                     />
                   )}
                 </LineChart>
