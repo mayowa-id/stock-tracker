@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { WSQuoteMessage } from './types.js';
+import { WSQuoteMessage } from './types';
 
 dotenv.config();
 

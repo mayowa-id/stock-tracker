@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono';
-import { extractToken, verifyToken } from '../lib/auth.js';
-import { prisma } from '../lib/db.js';
+import { extractToken, verifyToken } from '../lib/auth';
+import { prisma } from '../lib/db';
 
 // Extend Context to include user
 export interface AuthContext extends Context {

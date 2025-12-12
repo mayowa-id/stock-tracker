@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { getPositions, getPosition, closePosition, closeAllPositions } from '../lib/alpaca.js';
+import { getPositions, getPosition, closePosition, closeAllPositions } from '../lib/alpaca';
 
 const app = new Hono();
 

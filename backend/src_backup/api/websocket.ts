@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import type { Context, Next } from 'hono';
-import { getFinnhubWS, subscribeSymbol, unsubscribeSymbol, symbolClients } from '../lib/finhub.js';
+import { getFinnhubWS, subscribeSymbol, unsubscribeSymbol, symbolClients } from '../lib/finhub';
 import { Buffer } from 'node:buffer'; // For onMessage/onClose types
 
 // Export a function that takes upgradeWebSocket

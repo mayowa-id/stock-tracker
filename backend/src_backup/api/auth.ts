@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
-import { prisma } from '../lib/db.js';
-import { hashPassword, verifyPassword, generateToken } from '../lib/auth.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { prisma } from '../lib/db';
+import { hashPassword, verifyPassword, generateToken } from '../lib/auth';
+import { authMiddleware } from '../middleware/auth';
 
 const app = new Hono();
 

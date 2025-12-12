@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { resetMockAccount, placeMockOrder, createMockWatchlist } from '../lib/mock-trading.js';
+import { resetMockAccount, placeMockOrder, createMockWatchlist } from '../lib/mock-trading';
 
 const app = new Hono();
 

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
-import { getHistoricalData } from '../lib/yahoo-finance.js';
+import { getHistoricalData } from '../lib/yahoo-finance';
 
 const app = new Hono();
 

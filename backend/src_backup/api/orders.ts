@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
-import { placeOrder, getOrders, getOrder, cancelOrder, replaceOrder } from '../lib/alpaca.js';
+import { placeOrder, getOrders, getOrder, cancelOrder, replaceOrder } from '../lib/alpaca';
 
 const app = new Hono();
 

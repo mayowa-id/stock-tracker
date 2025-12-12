@@ -1,4 +1,4 @@
-import { getQuote } from './yahoo-finance.js';
+import { getQuote } from './yahoo-finance';
 
 // In-memory mock trading system (i will replace with database later)
 interface MockAccount {
